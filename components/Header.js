@@ -46,7 +46,7 @@ const Header = () => {
         <div className="flex items-center justify-end space-x-4 ">
           <HomeIcon className=" navBtn" />
           <MenuIcon className="h-6  md:hidden cursor-pointer" />
-          <span className="relative navBar">
+          <span className="relative navBtn">
             <PaperAirplaneIcon className=" navBtn rotate-45" />
             <span className="absolute -top-2 -right-3 text-xs w-5 h-5  bg-red-500 rounded-full flex items-center justify-center animate-pulse">
               4
