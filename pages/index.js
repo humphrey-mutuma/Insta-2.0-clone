@@ -4,7 +4,7 @@ import Header from "../components/Header";
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="bg-gray-50 h-screen overflow-y-visible ">
       <Head>
         <title>instagram 2.0 clone</title>
         <link rel="icon" href="/favicon.ico" />
