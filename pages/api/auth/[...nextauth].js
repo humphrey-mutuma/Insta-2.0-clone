@@ -9,11 +9,13 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+
   pages: {
     signIn: "/auth/signin",
   },
+
   callbacks: {
-    async sessionStorage({ session, token, user }) {
+    async session({ session, token, user }) {
       session.user.username = session.user.name
         .split(" ")
         .join("")
