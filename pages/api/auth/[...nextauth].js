@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import GoogleProvider from `next-auth/providers/google`
+import GoogleProvider from "next-auth/providers/google";
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -9,4 +9,7 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  pages: {
+    signIn: "/auth/signin",
+  },
 });
