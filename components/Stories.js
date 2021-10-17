@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 const Stories = () => {
   const [suggestions, setSuggestions] = useState([]);
   const { data: session } = useSession();
-  console.log("toooo", session);
+
   useEffect(() => {
     const suggestions = [...Array(20)].map((_, i) => ({
       ...faker.helpers.contextualCard(),
