@@ -1,3 +1,5 @@
+import { addDoc, collection, serverTimestamp } from "@firebase/firestore";
+import { async } from "@firebase/util";
 import {
   BookmarkIcon,
   ChatIcon,
@@ -8,9 +10,27 @@ import {
 } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { db } from "../firebase";
 
 const Post = ({ id, username, userImg, img, caption }) => {
   const { data: session } = useSession();
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
+
+  const sendComment = async (e) => {
+    e.preventDefault();
+
+    const commentToSend = comment;
+    setComment(" ");
+
+    await addDoc(collection(db, "posts", id, "comments"), {
+      comment: commentToSend,
+      username: session.user.username,
+      userImage: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+  };
 
   return (
     <section className="bg-white my-7 border rounded-sm">
@@ -54,11 +74,20 @@ const Post = ({ id, username, userImg, img, caption }) => {
         <form className="flex p-4 items-center">
           <EmojiHappyIcon className="h-7" />
           <input
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
             placeholder="Add a comment"
             className="flex-1 border-none focus:ring-0 outline-none"
             type="text"
           />
-          <button className="font-semibold text-blue-400">Post</button>
+          <button
+            type="submit"
+            disabled={!comment.trim()}
+            onClick={sendComment}
+            className="font-semibold text-blue-600"
+          >
+            Post
+          </button>
         </form>
       )}
     </section>
