@@ -39,7 +39,7 @@ const Modal = () => {
     });
 
     // get the post id
-    console.log("new doc added with id ", docRef.id);
+    // console.log("new doc added with id ", docRef.id);
     // upload image to firebase storage
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
 
