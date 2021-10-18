@@ -125,6 +125,11 @@ const Post = ({ id, username, userImg, img, caption }) => {
 
       {/* caption  */}
       <p className="p-5 truncate">
+        {
+          likes.length> 0 && (
+          <p className="text-xs font-bold mb-1">{likes.length} likes</p>
+          )
+        }
         <span className="font-bold mr-1">{username}</span>
         {caption}
       </p>
