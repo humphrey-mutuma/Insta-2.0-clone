@@ -17,7 +17,7 @@ const Posts = () => {
     return unsubscribe;
   }, [db]);
 
-  console.log("postiiis", posts);
+  // console.log("postiiis", posts);
 
   return (
     <div>

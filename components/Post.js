@@ -1,4 +1,11 @@
-import { addDoc, collection, serverTimestamp } from "@firebase/firestore";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "@firebase/firestore";
 import { async } from "@firebase/util";
 import {
   BookmarkIcon,
@@ -10,7 +17,7 @@ import {
 } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase";
 
 const Post = ({ id, username, userImg, img, caption }) => {
@@ -18,6 +25,21 @@ const Post = ({ id, username, userImg, img, caption }) => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
 
+  // get them comments from firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, "posts", id, "comments"),
+        orderBy("timestamp", "desc")
+      ),
+      (snapshot) => {
+        setComments(snapshot.docs);
+      }
+    );
+    return unsubscribe;
+  }, [db]);
+
+  // post them comments to firestore
   const sendComment = async (e) => {
     e.preventDefault();
 
@@ -67,7 +89,26 @@ const Post = ({ id, username, userImg, img, caption }) => {
         <span className="font-bold mr-1">{username}</span>
         {caption}
       </p>
-      {/* comments */}
+
+      {/* Here comes them comments*/}
+      {comments.length > 0 && (
+        <section className="ml-10 h-20 overflow-y-scroll scrollbar-thumb-gray-500 scrollbar-thin">
+          {comments.map((comment) => (
+            <div key={comment.id} className="flex items-center space-x-2 mb-3">
+              <img
+                className="h-7 rounded-full"
+                src={comment.data().userImage}
+                alt=""
+              />
+              <p className="text-sm flex-1">
+                <span className="font-bold">{comment.data().username}</span>{" "}
+                {comment.data().comment}
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
+
       {/* input box */}
       {/* conditionally show comment button and input when user in logged in */}
       {session && (
