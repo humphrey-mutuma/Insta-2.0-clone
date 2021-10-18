@@ -18,6 +18,7 @@ import {
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Moment from "react-moment";
 import { db } from "../firebase";
 
 const Post = ({ id, username, userImg, img, caption }) => {
@@ -104,6 +105,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
                 <span className="font-bold">{comment.data().username}</span>{" "}
                 {comment.data().comment}
               </p>
+              <Moment className="pr-5 text-xs" fromNow>{comment.data().timestamp?.toDate()}</Moment>
             </div>
           ))}
         </section>
