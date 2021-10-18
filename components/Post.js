@@ -1,10 +1,13 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "@firebase/firestore";
 import { async } from "@firebase/util";
 import {
@@ -25,6 +28,8 @@ const Post = ({ id, username, userImg, img, caption }) => {
   const { data: session } = useSession();
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState([]);
 
   // get them comments from firestore
   useEffect(() => {
@@ -38,7 +43,35 @@ const Post = ({ id, username, userImg, img, caption }) => {
       }
     );
     return unsubscribe;
-  }, [db]);
+  }, [db, id]);
+
+  // get them likes from firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "likes"),
+      (snapshot) => {
+        setLikes(snapshot.docs);
+      }
+    );
+    return unsubscribe;
+  }, [db, id]);
+
+  // store the likes on firestore posts, according to the unique user id(udi)
+  const likePost = async () => {
+    if (hasLiked) {
+      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
+    } else {
+      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      });
+    }
+  };
+  // go through likes and check if the user id match the like id
+  useEffect(() => {
+    setHasLiked(
+      likes.findIndex((like) => like.id === session?.user?.uid) !== -1
+    );
+  }, [likes]);
 
   // post them comments to firestore
   const sendComment = async (e) => {
@@ -76,7 +109,11 @@ const Post = ({ id, username, userImg, img, caption }) => {
       {session && (
         <section className="flex justify-between items-center px-4 pt-4">
           <div className="flex space-x-4 ">
-            <HeartIcon className="btn" />
+            {hasLiked ? (
+              <HeartIconFilled onClick={likePost} className="btn text-red-600" />
+            ) : (
+              <HeartIcon onClick={likePost} className="btn" />
+            )}
             <ChatIcon className="btn" />
             <PaperAirplaneIcon className="btn" />
           </div>
@@ -85,6 +122,7 @@ const Post = ({ id, username, userImg, img, caption }) => {
           </div>
         </section>
       )}
+
       {/* caption  */}
       <p className="p-5 truncate">
         <span className="font-bold mr-1">{username}</span>
@@ -105,7 +143,9 @@ const Post = ({ id, username, userImg, img, caption }) => {
                 <span className="font-bold">{comment.data().username}</span>{" "}
                 {comment.data().comment}
               </p>
-              <Moment className="pr-5 text-xs" fromNow>{comment.data().timestamp?.toDate()}</Moment>
+              <Moment className="pr-5 text-xs" fromNow>
+                {comment.data().timestamp?.toDate()}
+              </Moment>
             </div>
           ))}
         </section>
